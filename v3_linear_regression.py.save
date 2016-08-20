@@ -1,0 +1,70 @@
+#usr/bin/env/python
+import matplotlib.pyplot as plt
+import pylab, numpy
+from numpy import loadtxt, zeros, ones, array, linspace, logspace
+import sympy, sys
+from sympy import *
+regression_data=numpy.genfromtxt('data.txt', dtype=float)
+#print regression_data
+col1=regression_data[:, 0]
+col2=regression_data[:, 1]
+
+pylab.xlim([10,20])
+pylab.ylim([10,20])
+
+#global declaration of theta_0 and theta_1 values. 
+theta=numpy.zeros(shape=(1,2))
+print theta[0][0], theta[0][1]
+
+def cost_function(dframe, theta):
+    list_errors=[]
+    predicted_vals=[]
+    m = len(dframe)	  
+    for data_point in dframe:
+        #predictig the hypothesized value at every data point
+	hyp_x=theta[0][0]*data_point[0] + theta[0][1]
+        #creating a list of hyp values
+	predicted_vals.append(hyp_x)
+        #calculating error
+        error=data_point[1]-hyp_x
+      	#squaring error
+      	sq_error=error*error
+        #appending to a list
+        list_errors.append(sq_error)
+    #creating a cost function which takes this list of errors
+    J = (1.0 / (2 * m)) * sum(list_errors)
+    return J
+
+
+init_cost=cost_function(regression_data, theta)
+
+
+def pred_value(dframe):
+    #setting up differential variables
+    theta_0, theta_1 = symbols('theta_0, theta_1')
+    #initializing a cost function
+    J = cost_function(regression_data, theta)
+    #computing cost function and updating for each data point
+   
+    for j in range(len(dframe)):
+        #differentiating cost function wrt th0 and th1
+    	slope_cost=diff(J, theta_0)
+    	intercept_cost=diff(J, theta_1)
+        print slope_cost, intercept_cost
+        #updating th0 and th1
+        theta[0][0] = theta[0][0] - 0.01*slope_cost
+        theta[0][1] = theta[0][1] - 0.01*intercept_cost
+        print theta        
+        J=cost_function(dframe, theta)
+        print J
+
+		
+
+
+pred_value(regression_data)
+
+#cal_slope(regression_data)
+plot2=plt.plot(col2, col1, "ro")
+plt.show()
+
+
